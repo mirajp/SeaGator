@@ -1,0 +1,14 @@
+﻿Build started 12/1/2015 4:07:36 PM.
+     1>Project "C:\Users\Administrator\Documents\Visual Studio 2015\Projects\Win32Keyboard\Win32Keyboard\Win32Keyboard.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" /AI"C:\Program Files (x86)\Windows Kits\8.1\References\CommonConfiguration\Neutral" /Zi /clr /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /EHa /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /TP /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\mscorlib.dll" /analyze- /errorReport:prompt /clr:nostdlib GT_HelloWorldWin32.cpp
+         GT_HelloWorldWin32.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Administrator\Documents\Visual Studio 2015\Projects\Win32Keyboard\Debug\Win32Keyboard.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\Administrator\Documents\Visual Studio 2015\Projects\Win32Keyboard\Debug\Win32Keyboard.pdb" /ASSEMBLYDEBUG /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /FIXED:NO /NXCOMPAT /MACHINE:X86 Debug\GT_HelloWorldWin32.obj
+         "Debug\.NETFramework,Version=v4.0.AssemblyAttributes.obj"
+         Win32Keyboard.vcxproj -> C:\Users\Administrator\Documents\Visual Studio 2015\Projects\Win32Keyboard\Debug\Win32Keyboard.exe
+     1>Done Building Project "C:\Users\Administrator\Documents\Visual Studio 2015\Projects\Win32Keyboard\Win32Keyboard\Win32Keyboard.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:02.34
