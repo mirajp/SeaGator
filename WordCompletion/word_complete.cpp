@@ -5,6 +5,8 @@
 #include <map>
 #include <fstream>
 #include <vector>
+#include <ctime>
+
 class Node {
 	public:
 	std::map<char,Node> children; //map character to child
@@ -65,8 +67,9 @@ std::vector<std::string> Node::search(std::string prefix,std::string agg) {
 		if (this->children.count(key)) {
 			agg += key;
 			std::cout << "key: " << key << " agg: "<< agg << "\n";
-			this->children[key].search(prefix,agg);
+			return (this->children[key].search(prefix,agg));
 		} else {
+			std::cout << "alone" << words.size() << "\n";
 			return words;
 		}
 	} else {
@@ -90,12 +93,12 @@ Node load_corpus() {
 	Node root;
 	if (corpus.is_open()) {
 		while (std::getline(corpus,line)) {
-			std::cout << line <<"\n";
+			//std::cout << line <<"\n";
 			root.add(line);	
 		}
 	}
 	
-	std::cout << "loaded Corpus\n";
+	
 	for (std::map<char,Node>::iterator it = root.children.begin(); it != root.children.end(); ++it) {
 		char key = it->first;
 		std::cout << key << "\n";
@@ -105,10 +108,14 @@ Node load_corpus() {
 }
 
 int main() {
+
+	std::clock_t start,end;
+	start = std::clock();
 	Node root = load_corpus();
+	end = std::clock();
+	std::cout << "Time: " << (end-start)/(double)(CLOCKS_PER_SEC/1000) << "\n";
 	std::string a;
 	std::cout << "Enter a prefix: ";
 	std::getline(std::cin,a);
-	std::cout << root.search(a).size() << "\n";
-	
+	std::cout << root.search(a).front() << "\n";	
 }
