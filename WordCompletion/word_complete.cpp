@@ -29,7 +29,7 @@ void Node::add(std::string to_add) {
 	char key = to_add[0];
 	to_add.erase(0,1); //remove the first character
 	if (this->children.count(key)) {
-		this->children[key].add(to_add);	
+		return(this->children[key].add(to_add));	
 	} else {
 		Node node;
 		this->children[key] = node;
@@ -39,42 +39,33 @@ void Node::add(std::string to_add) {
 
 std::vector<std::string> Node::dfs(std::string agg) {
 	std::vector<std::string> words;
-	std::cout << "in dfs" << "\n";
 	if (this->children.size() == 0) {  //if leaf
-		std::cout << agg << "\n";
 		words.push_back(agg);
-		std::cout << "size: "<<words.size() << "\n";
 		return words;
 	}
 
 	if (this->is_word == true) {
-		std::cout <<"is word " << agg << "\n";
 		words.push_back(agg);
 	}
 	for (std::map<char,Node>::iterator it = this->children.begin(); it != this->children.end(); ++it) {
 		char key = it->first;
-		this->children[key].dfs(agg+key);
+		return(this->children[key].dfs(agg+key));
 	}
 }
 
 std::vector<std::string> Node::search(std::string prefix,std::string agg) {
 	std::vector<std::string> words,words2;
-	std::cout << "in search\n";
 	if (prefix.length() > 0) {
-		std::cout << "prefix len " <<prefix.length() << "\n";
 		char key = prefix[0];
 		prefix.erase(0,1);
 		if (this->children.count(key)) {
 			agg += key;
-			std::cout << "key: " << key << " agg: "<< agg << "\n";
-			return (this->children[key].search(prefix,agg));
+			return(this->children[key].search(prefix,agg));
 		} else {
-			std::cout << "alone" << words.size() << "\n";
-			return words;
+			;
 		}
 	} else {
 		if (this->is_word == true) {
-			std::cout << "is word " << agg << "\n";
 			words.push_back(agg);
 		}
 		for (std::map<char,Node>::iterator it = this->children.begin(); it != this->children.end(); ++it) {
@@ -82,7 +73,6 @@ std::vector<std::string> Node::search(std::string prefix,std::string agg) {
 			words2 = this->children[key].dfs(agg+key);
 		}		
 		words.insert(words.end(),words2.begin(),words2.end());
-		std::cout <<"WTF " << words.size() << "\n";
 		return words;
 	}
 }
@@ -93,17 +83,9 @@ Node load_corpus() {
 	Node root;
 	if (corpus.is_open()) {
 		while (std::getline(corpus,line)) {
-			//std::cout << line <<"\n";
 			root.add(line);	
 		}
 	}
-	
-	
-	for (std::map<char,Node>::iterator it = root.children.begin(); it != root.children.end(); ++it) {
-		char key = it->first;
-		std::cout << key << "\n";
-	}
-
 	return root;
 }
 
@@ -117,5 +99,5 @@ int main() {
 	std::string a;
 	std::cout << "Enter a prefix: ";
 	std::getline(std::cin,a);
-	std::cout << root.search(a).front() << "\n";	
+	std::cout << root.search(a).size() << "\n";	
 }
