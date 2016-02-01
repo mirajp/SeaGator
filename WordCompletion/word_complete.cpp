@@ -6,6 +6,7 @@
 #include <fstream>
 #include <vector>
 #include <ctime>
+#include <algorithm>
 
 class Node {
 	public:
@@ -22,29 +23,36 @@ Node::Node() {
 }
 
 void Node::add(std::string to_add) {
+	std::cout << "Adding word: "<<to_add << "\n";
 	if (to_add.length() == 0) {
 		this -> is_word = true;
 		return;
 	}
 	char key = to_add[0];
 	to_add.erase(0,1); //remove the first character
-	if (this->children.count(key)) {
+	std::cout<< "Ma key " << key << "\n";
+	std::cout << "Ma string " << to_add << "\n";
+	if (this->children.count(key) > 0) {
+		std::cout << "Inside IF " << key << "\n";
 		return(this->children[key].add(to_add));	
 	} else {
 		Node node;
+		std::cout << "In Else " << key << "\n";
 		this->children[key] = node;
-		node.add(to_add);	
+		return(node.add(to_add));	
 	}
 }
 
 std::vector<std::string> Node::dfs(std::string agg) {
 	std::vector<std::string> words;
 	if (this->children.size() == 0) {  //if leaf
+		std::cout << "In dfs (size=0) "<<agg << "\n";
 		words.push_back(agg);
 		return words;
 	}
 
 	if (this->is_word == true) {
+		std::cout << "in dfs (is_word==true) " << agg << "\n";
 		words.push_back(agg);
 	}
 	for (std::map<char,Node>::iterator it = this->children.begin(); it != this->children.end(); ++it) {
@@ -99,5 +107,6 @@ int main() {
 	std::string a;
 	std::cout << "Enter a prefix: ";
 	std::getline(std::cin,a);
-	std::cout << root.search(a).size() << "\n";	
+	std::cout << root.search(a).size() << "\n";
+	std::cout << root.search(a).front() << "\n";
 }
