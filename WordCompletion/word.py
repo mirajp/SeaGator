@@ -11,23 +11,23 @@ class Node:
 
 	def add_item(self, string):
 		''' Method to add a string the Trie data structure'''
-		print("Adding word " + string)
+#		print("Adding word " + string)
 		if len(string) == 0:
 			self.word_marker = True 
 			return 
 		
 		key = string[0] #Extract first character
 		string = string[1:] #Create a string by removing first character
-		print("Ma key " + key)
-		print("Ma string " + string)
+#		print("Ma key " + key)
+#		print("Ma string " + string)
 		# If the key character exists in the hash, call next pointing node's add_item() with remaining string as argument
 		if self.next.has_key(key):
-			print("Inside IF " + key)
+#			print("Inside IF " + key)
 			self.next[key].add_item(string)
 		# Else create an empty node. Insert the key character to hash and point it to newly created node. Call add_item() in new node with remaining string.
 		else:
 			node = Node()
-			print("In Else " + key)
+#			print("In Else " + key)
 			self.next[key] = node
 			node.add_item(string)
 

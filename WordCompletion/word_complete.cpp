@@ -23,36 +23,34 @@ Node::Node() {
 }
 
 void Node::add(std::string to_add) {
-	std::cout << "Adding word: "<<to_add << "\n";
+	//std::cout << "Adding word: "<<to_add << "\n";
 	if (to_add.length() == 0) {
 		this -> is_word = true;
 		return;
 	}
 	char key = to_add[0];
 	to_add.erase(0,1); //remove the first character
-	std::cout<< "Ma key " << key << "\n";
-	std::cout << "Ma string " << to_add << "\n";
+	//std::cout<< "Ma key " << key << "\n";
+	//std::cout << "Ma string " << to_add << "\n";
 	if (this->children.count(key) > 0) {
-		std::cout << "Inside IF " << key << "\n";
+		//std::cout << "Inside IF " << key << "\n";
 		return(this->children[key].add(to_add));	
 	} else {
 		Node node;
-		std::cout << "In Else " << key << "\n";
+		//std::cout << "In Else " << key << "\n";
 		this->children[key] = node;
-		return(node.add(to_add));	
+		return(this->children[key].add(to_add));	
 	}
 }
 
 std::vector<std::string> Node::dfs(std::string agg) {
 	std::vector<std::string> words;
 	if (this->children.size() == 0) {  //if leaf
-		std::cout << "In dfs (size=0) "<<agg << "\n";
 		words.push_back(agg);
 		return words;
 	}
 
 	if (this->is_word == true) {
-		std::cout << "in dfs (is_word==true) " << agg << "\n";
 		words.push_back(agg);
 	}
 	for (std::map<char,Node>::iterator it = this->children.begin(); it != this->children.end(); ++it) {
@@ -62,11 +60,11 @@ std::vector<std::string> Node::dfs(std::string agg) {
 }
 
 std::vector<std::string> Node::search(std::string prefix,std::string agg) {
-	std::vector<std::string> words,words2;
+	std::vector<std::string> words,words2,words3;
 	if (prefix.length() > 0) {
 		char key = prefix[0];
 		prefix.erase(0,1);
-		if (this->children.count(key)) {
+		if (this->children.count(key)) { 
 			agg += key;
 			return(this->children[key].search(prefix,agg));
 		} else {
@@ -77,10 +75,11 @@ std::vector<std::string> Node::search(std::string prefix,std::string agg) {
 			words.push_back(agg);
 		}
 		for (std::map<char,Node>::iterator it = this->children.begin(); it != this->children.end(); ++it) {
-			char key = it->first;
+			char key = it->first;//first is key, second is value
 			words2 = this->children[key].dfs(agg+key);
+			words3.insert(words3.end(),words2.begin(),words2.end());
 		}		
-		words.insert(words.end(),words2.begin(),words2.end());
+		words.insert(words.end(),words3.begin(),words3.end());
 		return words;
 	}
 }
@@ -107,6 +106,9 @@ int main() {
 	std::string a;
 	std::cout << "Enter a prefix: ";
 	std::getline(std::cin,a);
-	std::cout << root.search(a).size() << "\n";
-	std::cout << root.search(a).front() << "\n";
+	int num_words = root.search(a).size();
+	for(int i = 0; i < num_words; i++) {
+		std::cout << root.search(a)[i] << std::endl;
+	
+	}
 }
