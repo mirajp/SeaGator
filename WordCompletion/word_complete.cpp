@@ -53,15 +53,21 @@ void Node::add(std::string to_add) {
 std::vector<std::string> Node::dfs(std::string agg,std::vector<std::string> &words) {
 	//std::vector<std::string> words;
 	//std::cout << "in dfs: " << agg << std::endl;
+	/*
 	if (this->is_word == true) {  // node is a word
 		//std::cout << "in dfs: " << agg << std::endl;
 		words.push_back(agg);
 		return words;
 	}
+	*/
+	if (this->is_word == true) {
+		words.push_back(agg);
+	}
 	for (std::map<char,Node *>::iterator it = this->children.begin(); it != this->children.end(); ++it) {
 		char key = it->first;
-		return this->children[key]->dfs(agg+key,words);
+		this->children[key]->dfs(agg+key,words);
 	}
+	return words;
 	
 }
 std::vector<std::string> Node::search(std::string prefix,std::string agg) {
