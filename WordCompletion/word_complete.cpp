@@ -41,7 +41,8 @@ void Node::add(std::string to_add) {
 	if (this->children.count(key) > 0) {
 		//std::cout << "Inside IF " << key << "\n";
 		return(this->children[key]->add(to_add));	
-	} else {
+	} 
+	else {
 		Node *node = new Node();
 		//std::cout << "In Else " << key << "\n";
 		this->children[key] = node;
@@ -56,12 +57,13 @@ std::vector<std::string> Node::dfs(std::string agg,std::vector<std::string> &wor
 		//std::cout << "in dfs: " << agg << std::endl;
 		words.push_back(agg);
 		return words;
+	}
 	for (std::map<char,Node *>::iterator it = this->children.begin(); it != this->children.end(); ++it) {
 		char key = it->first;
 		return this->children[key]->dfs(agg+key,words);
 	}
+	
 }
-
 std::vector<std::string> Node::search(std::string prefix,std::string agg) {
 	std::vector<std::string> words,words2,words3;
 	if (prefix.length() > 0) {
@@ -71,7 +73,8 @@ std::vector<std::string> Node::search(std::string prefix,std::string agg) {
 			agg += key;
 			return(this->children[key]->search(prefix,agg));
 		} 
-	} else {
+	} 
+	else {
 		if (this->is_word == true) {
 			std::cout << "In search: " << agg <<std::endl;
 			words.push_back(agg);
