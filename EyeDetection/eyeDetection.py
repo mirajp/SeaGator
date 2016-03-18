@@ -16,15 +16,19 @@ cap2  = cv2.VideoCapture(1)
 
 while 1:
     ret, img = cap.read()
+    #Denoising both the color and then the grayscale image looks nice, but time expensive
+    #img = cv2.fastNlMeansDenoisingColored(img,None,10,10,7,21)
     ret2,img2 = cap2.read()
-
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    #gray = cv2.fastNlMeansDenoising(gray,None,10,7)
     gray2 = cv2.cvtColor(img2,cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+    
+    faces = face_cascade.detectMultiScale(img, 1.3, 5)
     #faces = cv2gpu.find_faces('gray.png')
     #faces2 = cv2gpu.find_faces('gray2.png')
-    faces2 = face_cascade.detectMultiScale(gray2,1.3, 5)
-    print faces
+    faces2 = face_cascade.detectMultiScale(img2,1.3, 5)
+    print "Cam1", faces
+    print "Cam2", faces2
 
     for (x,y,w,h),(x2,y2,w2,h2) in zip(faces,faces2):
         cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),1)
@@ -65,11 +69,12 @@ while 1:
         base_save_path = 'screencap'
         picNum = 0
         
-        while os.path.exists(save_path + ".jpg"):
+        while os.path.exists(save_path + "color.jpg"):
             picNum += 1
             save_path = base_save_path + str(picNum)
         print "saving as", (save_path + ".jpg")
-        cv2.imwrite(save_path + ".jpg", img)
+        cv2.imwrite(save_path + "color.jpg", img)
+        cv2.imwrite(save_path + "gray.jpg", gray)
         #cv2.destroyAllWindows()
     elif k == ord('q'):
         break
