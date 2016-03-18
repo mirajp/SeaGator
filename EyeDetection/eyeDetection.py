@@ -3,14 +3,22 @@ import cv2
 import os.path
 import cv2gpu
 
+maxMisses = 3
+stretchAmount = 10
 padding = 50
 #Localized face detection, store upper left x,y with w,h
 local_face = {'x':0, 'y':0, 'w':0, 'h':0}
+numEyesFound = 0
+local_eyes = [{'x':0, 'y':0, 'w':0, 'h':0},{'x':0, 'y':0, 'w':0, 'h':0}]
+numMisses = 0
+
+cascade_file_gpu = 'haarcascade_frontalface_default_cuda.xml'
+cv2gpu.init_gpu_detector(cascade_file_gpu)
 
 def updateLocalFace(x,y,w,h):
     global padding
-    localx = x-padding
-    localy = y-padding
+    localx = local_face['x']+x-padding
+    localy = local_face['y']+y-padding
     if localx < 0:
         localx = 0
     if localy < 0:
@@ -22,10 +30,23 @@ def updateLocalFace(x,y,w,h):
     local_face['h'] = h+padding*2
     return
 
+def expandFaceWindow(stretch):
+    localx = local_face['x']-stretch
+    localy = local_face['y']-stretch
+    if localx < 0:
+        localx = 0
+    if localy < 0:
+        localy = 0
+
+    local_face['x'] = localx
+    local_face['y'] = localy
+    local_face['w'] = local_face['w']+stretch*2
+    local_face['h'] = local_face['h']+stretch*2
+    return
 
 # multiple cascades: https://github.com/Itseez/opencv/tree/master/data/haarcascades
 #https://github.com/Itseez/opencv/blob/master/data/haarcascades/haarcascade_frontalface_default.xml
-face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+#face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 #cv2gpu.init_cpu_detector('haarcascade_eye_tree_eyeglasses.xml')
 #https://github.com/Itseez/opencv/blob/master/data/haarcascades/haarcascade_eye.xml
 #eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
@@ -34,10 +55,11 @@ eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 
 cap = cv2.VideoCapture(0)
 #cap2  = cv2.VideoCapture(1)
-
+iter = 0
 while 1:
     ret, imgCap = cap.read()
-    #If face was found, crop image immediately
+    print "ret=",ret
+    #If face was found in previous frame, crop image immediately
     if local_face['w']:
         img = imgCap[local_face['y']:local_face['y']+local_face['h'], local_face['x']:local_face['x']+local_face['w']]
     else:
@@ -47,11 +69,16 @@ while 1:
     #img = cv2.fastNlMeansDenoisingColored(img,None,10,10,7,21)
     #ret2,img2 = cap2.read()
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    gray = cv2.fastNlMeansDenoising(gray,None,10,7)
+    #gray = cv2.fastNlMeansDenoising(gray,None,10,7)
     #gray2 = cv2.cvtColor(img2,cv2.COLOR_BGR2GRAY)
+
+    cv2.imwrite("webcamgray.jpg", gray)
+    print "saved file"
+    faces = cv2gpu.find_faces("webcamgray.jpg")
+    print "found faces"
+    #faces = face_cascade.detectMultiScale(gray, 1.3, 5)
     
     #faces = face_cascade.detectMultiScale(img, 1.3, 5)
-    faces = face_cascade.detectMultiScale(gray, 1.3, 5)
     #faces = cv2gpu.find_faces('gray.png')
     #faces2 = cv2gpu.find_faces('gray2.png')
     #faces2 = face_cascade.detectMultiScale(img2,1.3, 5)
@@ -60,11 +87,16 @@ while 1:
     
     if len(faces) == 0:
         #Miss, lost face
-        local_face['w'] = 0
+        numMisses += 1
+        expandFaceWindow(stretchAmount)
+        if numMisses > maxMisses:
+            print "Resetting window"
+            local_face['w'] = 0
     #for (x,y,w,h),(x2,y2,w2,h2) in zip(faces,faces2):
     for (x,y,w,h) in faces:
         print "\tFound face"
-        updateLocalFace(x,y,w,h)
+        numMisses = 0
+        #updateLocalFace(x,y,w,h)
         
         print local_face
         
@@ -78,11 +110,34 @@ while 1:
         cv2.imshow('face', zoomed_face)
 
         eyes = eye_cascade.detectMultiScale(roi_gray)
-        for (ex,ey,ew,eh) in eyes:
-            print "\tFound eye", [ex, ey, ew, eh]
-            #Green rectangle for eyes
-            cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
+        if len(eyes) == 2:
+            (ex0, ey0, ew0, eh0) = eyes[0]
+            (ex1, ey1, ew1, eh1) = eyes[1]
+            
+            eyeBoxArea0 = ew0*eh0
+            eyeBoxArea1 = ew1*eh1
+            
+            eye_color = (0,255,0)
+            large_eye_color = (0,0,255)
 
+            if (abs(eyeBoxArea0-eyeBoxArea1)>300):
+                if (eyeBoxArea0 > eyeBoxArea1):
+                    cv2.rectangle(roi_color,(ex0,ey0),(ex0+ew0,ey0+eh0),large_eye_color,1)
+                    cv2.rectangle(roi_color,(ex1,ey1),(ex1+ew1,ey1+eh1),eye_color,1)
+                else:
+                    cv2.rectangle(roi_color,(ex0,ey0),(ex0+ew0,ey0+eh0),eye_color,1)
+                    cv2.rectangle(roi_color,(ex1,ey1),(ex1+ew1,ey1+eh1),large_eye_color,1)
+            else:
+                cv2.rectangle(roi_color,(ex0,ey0),(ex0+ew0,ey0+eh0),eye_color,1)
+                cv2.rectangle(roi_color,(ex1,ey1),(ex1+ew1,ey1+eh1),eye_color,1)
+
+            """
+            for (ex,ey,ew,eh) in eyes:
+                print "\tFound eye", [ex, ey, ew, eh]
+                #Green rectangle for eyes
+                cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
+            """
+        
         """
         cv2.rectangle(img2,(x2,y2),(x2+w2,y2+h2),(255,0,0),1)
         roi_gray2 = gray2[y2:y2+h2, x2:x2+w2]
@@ -117,8 +172,11 @@ while 1:
         #cv2.destroyAllWindows()
     elif k == ord('q'):
         break
-    break
-        
+    """
+    iter += 1
+    if iter > 1:
+        break
+    """ 
 
 cap.release()
 #cap2.release()
