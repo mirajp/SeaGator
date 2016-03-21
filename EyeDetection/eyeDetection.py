@@ -1,11 +1,12 @@
 import numpy as np
 import cv2
 import os.path
-import cv2gpu
+#import cv2gpu
+import time
 
 maxMisses = 3
 stretchAmount = 10
-padding = 50
+padding = 100
 #Localized face detection, store upper left x,y with w,h
 local_face = {'x':0, 'y':0, 'w':0, 'h':0}
 numEyesFound = 0
@@ -13,7 +14,7 @@ local_eyes = [{'x':0, 'y':0, 'w':0, 'h':0},{'x':0, 'y':0, 'w':0, 'h':0}]
 numMisses = 0
 
 cascade_file_gpu = 'haarcascade_frontalface_default_cuda.xml'
-cv2gpu.init_gpu_detector(cascade_file_gpu)
+#cv2gpu.init_gpu_detector(cascade_file_gpu)
 
 def updateLocalFace(x,y,w,h):
     global padding
@@ -46,12 +47,38 @@ def expandFaceWindow(stretch):
 
 # multiple cascades: https://github.com/Itseez/opencv/tree/master/data/haarcascades
 #https://github.com/Itseez/opencv/blob/master/data/haarcascades/haarcascade_frontalface_default.xml
-#face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 #cv2gpu.init_cpu_detector('haarcascade_eye_tree_eyeglasses.xml')
 #https://github.com/Itseez/opencv/blob/master/data/haarcascades/haarcascade_eye.xml
 #eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 #eye_cascade = cv2.CascadeClassifier('haarcascade_eye_tree_eyeglasses.xml')
 eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
+pupil_params = cv2.SimpleBlobDetector_Params()
+glint_params = cv2.SimpleBlobDetector_Params()
+
+# Change thresholds
+pupil_params.minThreshold = 10;
+pupil_params.maxThreshold = 200;
+ 
+# Filter by Area.
+pupil_params.filterByArea = True
+pupil_params.minArea = 1500
+ 
+# Filter by Circularity
+pupil_params.filterByCircularity = True
+pupil_params.minCircularity = 0.1
+ 
+# Filter by Convexity
+pupil_params.filterByConvexity = True
+pupil_params.minConvexity = 0.87
+ 
+# Filter by Inertia
+pupil_params.filterByInertia = True
+pupil_params.minInertiaRatio = 0.01
+
+pupil_detector = cv2.SimpleBlobDetector_create(pupil_params)
+glint_detector = cv2.SimpleBlobDetector_create()
+
 
 cap = cv2.VideoCapture(0)
 #cap2  = cv2.VideoCapture(1)
@@ -72,11 +99,11 @@ while 1:
     #gray = cv2.fastNlMeansDenoising(gray,None,10,7)
     #gray2 = cv2.cvtColor(img2,cv2.COLOR_BGR2GRAY)
 
-    cv2.imwrite("webcamgray.jpg", gray)
-    print "saved file"
-    faces = cv2gpu.find_faces("webcamgray.jpg")
+    #cv2.imwrite("webcamgray.jpg", gray)
+    #print "saved file"
+    #faces = cv2gpu.find_faces("webcamgray.jpg")
+    faces = face_cascade.detectMultiScale(gray, 1.3, 5)
     print "found faces"
-    #faces = face_cascade.detectMultiScale(gray, 1.3, 5)
     
     #faces = face_cascade.detectMultiScale(img, 1.3, 5)
     #faces = cv2gpu.find_faces('gray.png')
@@ -97,8 +124,7 @@ while 1:
         print "\tFound face"
         numMisses = 0
         #updateLocalFace(x,y,w,h)
-        
-        print local_face
+        #print local_face
         
         #Blue rectangle for face
         cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),1)
@@ -120,7 +146,8 @@ while 1:
             eye_color = (0,255,0)
             large_eye_color = (0,0,255)
 
-            if (abs(eyeBoxArea0-eyeBoxArea1)>300):
+            if (abs(eyeBoxArea0-eyeBoxArea1)>1700):
+                print abs(eyeBoxArea0-eyeBoxArea1)
                 if (eyeBoxArea0 > eyeBoxArea1):
                     cv2.rectangle(roi_color,(ex0,ey0),(ex0+ew0,ey0+eh0),large_eye_color,1)
                     cv2.rectangle(roi_color,(ex1,ey1),(ex1+ew1,ey1+eh1),eye_color,1)
@@ -130,6 +157,15 @@ while 1:
             else:
                 cv2.rectangle(roi_color,(ex0,ey0),(ex0+ew0,ey0+eh0),eye_color,1)
                 cv2.rectangle(roi_color,(ex1,ey1),(ex1+ew1,ey1+eh1),eye_color,1)
+
+            eye0 = roi_color[ey0:ey0+eh0,ex0:ex0+ew0]
+            eye1 = roi_color[ey1:ey1+eh1,ex1:ex1+ew1]
+            keypoints0 = pupil_detector.detect(eye0)
+            print keypoints0
+            cv2.drawKeypoints(roi_color, keypoints0, np.array([]), (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+            cv2.imshow('eye0',eye0)
+            cv2.imshow('eye1',eye1)
 
             """
             for (ex,ey,ew,eh) in eyes:
@@ -176,7 +212,8 @@ while 1:
     iter += 1
     if iter > 1:
         break
-    """ 
+    """
+    time.sleep(1)
 
 cap.release()
 #cap2.release()
