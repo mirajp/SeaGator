@@ -1,9 +1,9 @@
 import cv2
 import numpy as np
 
-img = cv2.imread("eye0.jpg", 0)
+#img = cv2.imread("eye0.jpg", 0)
 #img = cv2.imread("screencap7eye0.jpg", 0)
-#img = cv2.imread("screencap7eye1.jpg", 0)
+img = cv2.imread("screencap7eye1.jpg", 0)
 img = cv2.medianBlur(img,3)
 img = cv2.equalizeHist(img)
 cv2.imshow("img", img)

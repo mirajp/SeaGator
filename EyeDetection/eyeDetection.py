@@ -178,18 +178,31 @@ while 1:
             eye1 = roi_gray[ey1:ey1+eh1,ex1:ex1+ew1]
             #Hough circle method
             eye0 = cv2.medianBlur(eye0, 3)
+            eye1 = cv2.medianBlur(eye1, 3)
             ceye0 = roi_color[ey0:ey0+eh0,ex0:ex0+ew0]
+            ceye1 = roi_color[ey1:ey1+eh1,ex1:ex1+ew1]
 
             eye0 = cv2.equalizeHist(eye0)
-            circles = cv2.HoughCircles(eye0,cv2.HOUGH_GRADIENT,1,10,param1=50,param2=30,minRadius=5,maxRadius=20)
+            #circles = cv2.HoughCircles(eye0,cv2.HOUGH_GRADIENT,1,10,param1=50,param2=30,minRadius=5,maxRadius=20)
+            circles = cv2.HoughCircles(eye0,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
             if circles is not None:
                 for i in circles[0,:]:
-                    print "found a circle"
                     cv2.circle(ceye0,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
                     cv2.circle(ceye0,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
-                cv2.imwrite('eye_hough.jpg',ceye0)
+                cv2.imwrite('eye0_hough.jpg',ceye0)
             print "showing eye0"
             cv2.imshow('eye0',eye0)
+
+            eye1 = cv2.equalizeHist(eye1)
+            #circles = cv2.HoughCircles(eye1,cv2.HOUGH_GRADIENT,1,10,param1=50,param2=30,minRadius=5,maxRadius=20)
+            circles = cv2.HoughCircles(eye1,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
+            if circles is not None:
+                for i in circles[0,:]:
+                    cv2.circle(ceye1,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
+                    cv2.circle(ceye1,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
+                cv2.imwrite('eye1_hough.jpg',ceye1)
+            print "showing eye1"
+            cv2.imshow('eye1',eye1)
             
             #pupil_params.minArea = eyeBoxArea0/5
             #pupil_params.maxArea = eyeBoxArea0/3
