@@ -150,7 +150,8 @@ while 1:
         #cv2.imshow('face', zoomed_face)
         #cv2.imshow('face', roi_color)
         
-        eyes = eye_cascade.detectMultiScale(roi_gray)
+        #eyes = eye_cascade.detectMultiScale(roi_gray)
+        eyes = eye_cascade.detectMultiScale(roi_color)
         if len(eyes) == 2:
             (ex0, ey0, ew0, eh0) = eyes[0]
             (ex1, ey1, ew1, eh1) = eyes[1]
@@ -174,26 +175,44 @@ while 1:
 
             #eye0 = roi_color[ey0:ey0+eh0,ex0:ex0+ew0]
             #eye1 = roi_color[ey1:ey1+eh1,ex1:ex1+ew1]
-            eye0 = roi_gray[ey0:ey0+eh0,ex0:ex0+ew0]
-            eye1 = roi_gray[ey1:ey1+eh1,ex1:ex1+ew1]
-            #Hough circle method
-            eye0 = cv2.medianBlur(eye0, 3)
-            eye1 = cv2.medianBlur(eye1, 3)
             ceye0 = roi_color[ey0:ey0+eh0,ex0:ex0+ew0]
-            ceye1 = roi_color[ey1:ey1+eh1,ex1:ex1+ew1]
-
+            eye0 = roi_gray[ey0:ey0+eh0,ex0:ex0+ew0]
+            cv2.bitwise_not(eye0, eye0)
+            eye0 = cv2.medianBlur(eye0, 3)
             eye0 = cv2.equalizeHist(eye0)
+
+            ceye1 = roi_color[ey1:ey1+eh1,ex1:ex1+ew1]
+            eye1 = roi_gray[ey1:ey1+eh1,ex1:ex1+ew1]
+            eye1 = cv2.medianBlur(eye1, 3)
+            eye1 = cv2.equalizeHist(eye1)
+
+            gceye0 = cv2.cvtColor(ceye0, cv2.COLOR_BGR2GRAY)
+            gceye0 = cv2.fastNlMeansDenoising(gceye0,None,10,7)
+            cv2.bitwise_not(gceye0, gceye0)
+            gceye0 = cv2.medianBlur(gceye0, 3)
+            gceye0 = cv2.equalizeHist(gceye0)
+            ret,gceye0 = cv2.threshold(gceye0, 175, 255, cv2.THRESH_BINARY)
+
+            cv2.imshow('threshold_eye0',gceye0)
+
             #circles = cv2.HoughCircles(eye0,cv2.HOUGH_GRADIENT,1,10,param1=50,param2=30,minRadius=5,maxRadius=20)
-            circles = cv2.HoughCircles(eye0,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
+            #circles = cv2.HoughCircles(eye0,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
+            print "E0: Width:", ew0, "Height:", eh0
+            print "E1: Width:", ew1, "Height:", eh1
+            circles = cv2.HoughCircles(gceye0,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
             if circles is not None:
+                print circles
                 for i in circles[0,:]:
+                    print "Center:", (i[0], i[1]), "Radius:", i[2]
                     cv2.circle(ceye0,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
+                    cv2.circle(eye0,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
                     cv2.circle(ceye0,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
+                    cv2.circle(eye0,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
                 cv2.imwrite('eye0_hough.jpg',ceye0)
             print "showing eye0"
             cv2.imshow('eye0',eye0)
 
-            eye1 = cv2.equalizeHist(eye1)
+            
             #circles = cv2.HoughCircles(eye1,cv2.HOUGH_GRADIENT,1,10,param1=50,param2=30,minRadius=5,maxRadius=20)
             circles = cv2.HoughCircles(eye1,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
             if circles is not None:

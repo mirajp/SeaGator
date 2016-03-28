@@ -3,10 +3,26 @@ import numpy as np
 
 #img = cv2.imread("eye0.jpg", 0)
 #img = cv2.imread("screencap7eye0.jpg", 0)
-img = cv2.imread("screencap7eye1.jpg", 0)
+#img = cv2.imread("screencap7eye1.jpg", 0)
+origimg = cv2.imread("eyecolor.jpg")
+cv2.imshow("original", origimg)
+cv2.waitKey(0)
+img = origimg.copy()
+img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+cv2.imshow("img_gray", img)
+cv2.imwrite("img_gray.jpg", img)
+cv2.waitKey(0)
+cv2.bitwise_not(img, img)
+cv2.imshow("img_grayinv", img)
+cv2.imwrite("img_grayinv.jpg", img)
+cv2.waitKey(0)
 img = cv2.medianBlur(img,3)
+cv2.imshow("img_grayinvblur", img)
+cv2.imwrite("img_grayinvblur.jpg", img)
+cv2.waitKey(0)
 img = cv2.equalizeHist(img)
-cv2.imshow("img", img)
+cv2.imshow("img_grayinvblurequi", img)
+cv2.imwrite("img_grayinvblurequi.jpg", img)
 cv2.waitKey(0)
 
 #param1 - refers to the edge threshold that will be used by the Canny edge detector
@@ -41,11 +57,15 @@ if circles is not None:
     print circles
     #circles = np.uint16(np.around(circles))
     for i in circles[0,:]:
+           cv2.circle(origimg,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
            cv2.circle(img,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
+           cv2.circle(origimg,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
            cv2.circle(img,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
 
 
-    cv2.imshow("preview", img)
+    cv2.imshow("centers", origimg)
+    cv2.imwrite("coloreyecenters.jpg", origimg)
+    cv2.imwrite("grayeyecenters.jpg", img)
     cv2.waitKey(0)
 else:
     print "No circle"
