@@ -1,5 +1,8 @@
 
 import Tkinter as tk
+from subprocess import Popen, PIPE
+import wnck
+
 
 top = tk.Tk()
 top.title("On Screen Keyboard")
@@ -15,6 +18,13 @@ def click(key):
     else:
         entry.insert(tk.END,key)
 
+def keypress(sequence):
+    p = Popen(['xte'], stdin=PIPE)
+    p.communicate(input=sequence)
+
+
+def target_window():
+	pass	
 button_list = [
 'q','w','e','r','t','y','u','i','o','p','<-',
 'a','s','d','f','g','h','j','k','l',
@@ -28,7 +38,7 @@ r = 2
 c = 0
 for b in button_list:
     rel = 'groove'
-    command = lambda x=b: click(x)
+    command = lambda x=b: keypress("key " + x+"'")
     if b != " Space ":
         tk.Button(top, text = b, width = 10,height= 5, relief = rel, command = command).grid(row = r, column = c)
     elif b == " Space ":
