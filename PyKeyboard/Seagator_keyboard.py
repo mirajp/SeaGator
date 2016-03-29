@@ -1,3 +1,4 @@
+#Andrew Koe
 import Tkinter as tk
 from subprocess import Popen, PIPE
 import wnck , gtk,re
