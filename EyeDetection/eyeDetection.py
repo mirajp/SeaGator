@@ -16,6 +16,8 @@ numMisses = 0
 cascade_file_gpu = 'haarcascade_frontalface_default_cuda.xml'
 #cv2gpu.init_gpu_detector(cascade_file_gpu)
 
+imageCount = 0
+
 def updateLocalFace(x,y,w,h):
     global padding
     localx = local_face['x']+x-padding
@@ -50,8 +52,8 @@ def expandFaceWindow(stretch):
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 #cv2gpu.init_cpu_detector('haarcascade_eye_tree_eyeglasses.xml')
 #https://github.com/Itseez/opencv/blob/master/data/haarcascades/haarcascade_eye.xml
-#eye_cascade = cv2.CascadeClassifier('haarcascade_eye_tree_eyeglasses.xml')
-eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
+eye_cascade = cv2.CascadeClassifier('haarcascade_eye_tree_eyeglasses.xml')
+#eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 pupil_params = cv2.SimpleBlobDetector_Params()
 glint_params = cv2.SimpleBlobDetector_Params()
 
@@ -96,7 +98,7 @@ while 1:
     else:
         img = imgCap
     """
-    img = imgCap
+    img = imgCap.copy()
     #Denoising both the color and then the grayscale image looks nice, but time expensive
     #img = cv2.fastNlMeansDenoisingColored(img,None,10,10,7,21)
     #ret2,img2 = cap2.read()
@@ -142,6 +144,8 @@ while 1:
         #Select region of interest by cropping image
         roi_gray = gray[y:y+h, x:x+w]
         roi_color = img[y:y+h, x:x+w]
+        savedFace = roi_color.copy()
+
         
         #zoomed_face = cv2.resize(roi_gray,None,fx=2, fy=2, interpolation = cv2.INTER_CUBIC)
         #roi_gray = cv2.resize(roi_gray,None,fx=2, fy=2, interpolation = cv2.INTER_CUBIC)
@@ -183,6 +187,7 @@ while 1:
 
             ceye1 = roi_color[ey1:ey1+eh1,ex1:ex1+ew1]
             eye1 = roi_gray[ey1:ey1+eh1,ex1:ex1+ew1]
+            cv2.bitwise_not(eye1, eye1)
             eye1 = cv2.medianBlur(eye1, 3)
             eye1 = cv2.equalizeHist(eye1)
 
@@ -191,9 +196,15 @@ while 1:
             cv2.bitwise_not(gceye0, gceye0)
             gceye0 = cv2.medianBlur(gceye0, 3)
             gceye0 = cv2.equalizeHist(gceye0)
-            ret,gceye0 = cv2.threshold(gceye0, 175, 255, cv2.THRESH_BINARY)
+            #ret,gceye0 = cv2.threshold(gceye0, 175, 255, cv2.THRESH_BINARY)
 
-            cv2.imshow('threshold_eye0',gceye0)
+            gceye1 = cv2.cvtColor(ceye1, cv2.COLOR_BGR2GRAY)
+            gceye1 = cv2.fastNlMeansDenoising(gceye1,None,10,7)
+            cv2.bitwise_not(gceye1, gceye1)
+            gceye1 = cv2.medianBlur(gceye1, 3)
+            gceye1 = cv2.equalizeHist(gceye1)
+
+            #cv2.imshow('threshold_eye0',gceye0)
 
             #circles = cv2.HoughCircles(eye0,cv2.HOUGH_GRADIENT,1,10,param1=50,param2=30,minRadius=5,maxRadius=20)
             #circles = cv2.HoughCircles(eye0,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
@@ -209,19 +220,21 @@ while 1:
                     cv2.circle(ceye0,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
                     cv2.circle(eye0,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
                 cv2.imwrite('eye0_hough.jpg',ceye0)
-            print "showing eye0"
-            cv2.imshow('eye0',eye0)
+                print "showing eye0"
+                cv2.imshow('eye0',eye0)
 
             
             #circles = cv2.HoughCircles(eye1,cv2.HOUGH_GRADIENT,1,10,param1=50,param2=30,minRadius=5,maxRadius=20)
-            circles = cv2.HoughCircles(eye1,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
+            circles = cv2.HoughCircles(gceye1,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
             if circles is not None:
                 for i in circles[0,:]:
                     cv2.circle(ceye1,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
+                    cv2.circle(eye1,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
                     cv2.circle(ceye1,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
+                    cv2.circle(eye1,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
                 cv2.imwrite('eye1_hough.jpg',ceye1)
-            print "showing eye1"
-            cv2.imshow('eye1',eye1)
+                print "showing eye1"
+                cv2.imshow('eye1',eye1)
             
             #pupil_params.minArea = eyeBoxArea0/5
             #pupil_params.maxArea = eyeBoxArea0/3
@@ -266,6 +279,8 @@ while 1:
 
     #cv2.imshow('img',img)
     cv2.imshow('img',img)
+    cv2.imwrite("./false/waterbottle" + str(imageCount) + ".jpg", imgCap)
+    imageCount += 1
     #cv2.imshow('img2',img2)
 
     k = cv2.waitKey(30) & 0xFF
