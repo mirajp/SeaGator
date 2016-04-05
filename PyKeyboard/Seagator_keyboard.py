@@ -23,9 +23,9 @@ class Keyboard:
             rel = 'groove'
             command = lambda x=b: self.keypress("key " + x+"'")
             if b != " Space ":
-                tk.Button(top, text = b, width = 7,height= 3,font = ("Helvetica",19), relief = rel, command = command).grid(row = r, column = c)
+                tk.Button(top, text = b, width = 7,height= 3,font = ("Helvetica",15), relief = rel, command = command).grid(row = r, column = c)
             elif b == " Space ":
-                tk.Button(top, text = b, width = 30,height = 3,font=("Helvetica",19), relief = rel, command = command).grid(row = 5, columnspan = 9)
+                tk.Button(top, text = b, width = 30,height = 3,font=("Helvetica",15), relief = rel, command = command).grid(row = 5, columnspan = 9)
             c+=1
             if c > 10 and r == 2:
                 c = 0
