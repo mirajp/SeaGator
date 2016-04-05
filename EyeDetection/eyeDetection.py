@@ -17,6 +17,7 @@ cascade_file_gpu = 'haarcascade_frontalface_default_cuda.xml'
 #cv2gpu.init_gpu_detector(cascade_file_gpu)
 
 imageCount = 0
+eyePairCount = 0
 
 def updateLocalFace(x,y,w,h):
     global padding
@@ -50,6 +51,7 @@ def expandFaceWindow(stretch):
 # multiple cascades: https://github.com/Itseez/opencv/tree/master/data/haarcascades
 #https://github.com/Itseez/opencv/blob/master/data/haarcascades/haarcascade_frontalface_default.xml
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+#face_cascade = cv2.CascadeClassifier('trained_cascade.xml')
 #cv2gpu.init_cpu_detector('haarcascade_eye_tree_eyeglasses.xml')
 #https://github.com/Itseez/opencv/blob/master/data/haarcascades/haarcascade_eye.xml
 eye_cascade = cv2.CascadeClassifier('haarcascade_eye_tree_eyeglasses.xml')
@@ -90,6 +92,7 @@ cap = cv2.VideoCapture(0)
 #cap2  = cv2.VideoCapture(1)
 iter = 0
 while 1:
+    #print "Frame #", imageCount
     ret, imgCap = cap.read()
     #If face was found in previous frame, crop image immediately
     """
@@ -206,36 +209,41 @@ while 1:
 
             #cv2.imshow('threshold_eye0',gceye0)
 
-            #circles = cv2.HoughCircles(eye0,cv2.HOUGH_GRADIENT,1,10,param1=50,param2=30,minRadius=5,maxRadius=20)
-            #circles = cv2.HoughCircles(eye0,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
-            print "E0: Width:", ew0, "Height:", eh0
-            print "E1: Width:", ew1, "Height:", eh1
-            circles = cv2.HoughCircles(gceye0,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
-            if circles is not None:
-                print circles
-                for i in circles[0,:]:
-                    print "Center:", (i[0], i[1]), "Radius:", i[2]
+            #circles0 = cv2.HoughCircles(eye0,cv2.HOUGH_GRADIENT,1,10,param1=50,param2=30,minRadius=5,maxRadius=20)
+            #circles0 = cv2.HoughCircles(eye0,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
+            #print "E0: Width:", ew0, "Height:", eh0
+            #print "E1: Width:", ew1, "Height:", eh1
+            circles0 = cv2.HoughCircles(gceye0,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
+            if circles0 is not None:
+                for i in circles0[0,:]:
+                    print "eye0: Center:", (x+ex0+i[0], y+ey0+i[1]), "Radius:", i[2]
                     cv2.circle(ceye0,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
                     cv2.circle(eye0,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
                     cv2.circle(ceye0,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
                     cv2.circle(eye0,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
                 cv2.imwrite('eye0_hough.jpg',ceye0)
-                print "showing eye0"
+                #print "showing eye0"
                 cv2.imshow('eye0',eye0)
 
             
-            #circles = cv2.HoughCircles(eye1,cv2.HOUGH_GRADIENT,1,10,param1=50,param2=30,minRadius=5,maxRadius=20)
-            circles = cv2.HoughCircles(gceye1,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
-            if circles is not None:
-                for i in circles[0,:]:
+            #circles1 = cv2.HoughCircles(eye1,cv2.HOUGH_GRADIENT,1,10,param1=50,param2=30,minRadius=5,maxRadius=20)
+            circles1 = cv2.HoughCircles(gceye1,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
+            if circles1 is not None:
+                if circles0 is not None:
+                    eyePairCount += 1
+
+                for i in circles1[0,:]:
+                    print "eye1: Center:", (x+ex1+i[0], y+ey1+i[1]), "Radius:", i[2]
                     cv2.circle(ceye1,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
                     cv2.circle(eye1,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
                     cv2.circle(ceye1,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
                     cv2.circle(eye1,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
                 cv2.imwrite('eye1_hough.jpg',ceye1)
-                print "showing eye1"
+                #print "showing eye1"
                 cv2.imshow('eye1',eye1)
             
+            print ""
+
             #pupil_params.minArea = eyeBoxArea0/5
             #pupil_params.maxArea = eyeBoxArea0/3
             #pupil_params.minArea = 100
@@ -245,13 +253,13 @@ while 1:
             #eye0 = cv2.resize(eye0,None,fx=2, fy=2, interpolation = cv2.INTER_CUBIC)
             #eye1 = cv2.resize(eye1,None,fx=2, fy=2, interpolation = cv2.INTER_CUBIC)
             #keypoints0 = pupil_detector.detect(eye0)
-            keypoints1 = pupil_detector.detect(eye1)
+            #keypoints1 = pupil_detector.detect(eye1)
             #print keypoints0
            # cv2.drawKeypoints(eye0, keypoints0, np.array([]), (0,255,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
            # cv2.drawKeypoints(eye1, keypoints1, np.array([]), (0,255,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
             #eye0 = cv2.drawKeypoints(eye0, keypoints0, np.array([]), (0,255,255), 4)
-            eye1 =cv2.drawKeypoints(eye1, keypoints1, np.array([]), (0,255,255), 4)
+            #eye1 =cv2.drawKeypoints(eye1, keypoints1, np.array([]), (0,255,255), 4)
 
             #cv2.imshow('eye0',ceye0)
             cv2.imshow('eye1',eye1)
@@ -279,8 +287,7 @@ while 1:
 
     #cv2.imshow('img',img)
     cv2.imshow('img',img)
-    cv2.imwrite("./false/waterbottle" + str(imageCount) + ".jpg", imgCap)
-    imageCount += 1
+    #cv2.imwrite("./false/waterbottle" + str(imageCount) + ".jpg", imgCap)
     #cv2.imshow('img2',img2)
 
     k = cv2.waitKey(30) & 0xFF
@@ -308,6 +315,10 @@ while 1:
         break
     """
     #time.sleep(0.5)
+    imageCount += 1
+
+    if eyePairCount > 10:
+        break
 
 cap.release()
 #cap2.release()
