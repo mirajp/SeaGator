@@ -47,7 +47,7 @@ class Keyboard:
         window_list = screen.get_windows()
         #active_window = screen.get_active_window().get_name()
         #active the second to last window unless it is the Seagator keyboard, then activate last opened
-        if not re.search("Sea",window_list[-2].get_name()):
+        if not re.search("Seagator Keyboard",window_list[-2].get_name()):
             window_list[-2].activate(0)
         else:
             window_list[-1].activate(0)
