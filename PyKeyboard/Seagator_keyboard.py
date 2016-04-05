@@ -55,7 +55,7 @@ class Keyboard:
        # for w in window_list
        #     print w.get_name()
         if shift_pressed == True:
-            sequence = '''keydown Shift_L\n''' + sequence[:-1] + '''\nkeyup Shift_L\n'''
+            sequence = '''keydown Shift_L\n''' + sequence[:-1] + '''\nkeyup Shift_L\n\0'''
             shift_pressed = not shift_pressed
  
         if re.search("<-",sequence):
