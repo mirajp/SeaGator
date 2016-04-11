@@ -2,7 +2,7 @@
 import Tkinter as tk
 from subprocess import Popen, PIPE
 import wnck , gtk,re
-
+import time
 shift_pressed = False
 
 class Keyboard:
@@ -37,7 +37,7 @@ class Keyboard:
         top.mainloop()
     
     def keypress(self,sequence):
-        print sequence
+#        print sequence
         #get the active window
         global shift_pressed
         screen = wnck.screen_get_default()
@@ -48,14 +48,14 @@ class Keyboard:
         #active_window = screen.get_active_window().get_name()
         #active the second to last window unless it is the Seagator keyboard, then activate last opened
         if not re.search("Seagator Keyboard",window_list[-2].get_name()):
-            window_list[-2].activate(0)
+            window_list[-2].activate(int(time.time()))
         else:
-            window_list[-1].activate(0)
-
+            window_list[-1].activate(int(time.time()))
+	time.sleep(0.1)
        # for w in window_list
        #     print w.get_name()
         if shift_pressed == True:
-            sequence = '''keydown Shift_L\n''' + sequence[:-1] + '''\nkeyup Shift_L\n\0'''
+            sequence = '''keydown Shift_L\n''' + sequence[:-1] + '''\nkeyup Shift_L\n'''
             shift_pressed = not shift_pressed
  
         if re.search("<-",sequence):
@@ -71,7 +71,7 @@ class Keyboard:
         p.communicate(input=sequence)
         for w in window_list:
             if re.search("Sea",w.get_name()):
-                w.activate(0) # reactivate the keyboard
+                w.activate(int(time.time())) # reactivate the keyboard
 
         screen.force_update()
 Keyboard()
