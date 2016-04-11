@@ -9,10 +9,9 @@ import word
 shift_pressed = False
 buf = []
 
-sug1 = tk.Button()
-sug2 = tk.Button()
-sug3 = tk.Button()
-
+sug1 = None
+sug2 = None
+sug3 = None
 class Keyboard:
     def __init__(self):
         top = tk.Tk()
@@ -63,7 +62,7 @@ class Keyboard:
 
     def put_suggest(self,txt):
 	 #get the active window
-        global shift_pressed
+        global buf
         screen = wnck.screen_get_default()
         screen.force_update()
         while gtk.events_pending():
@@ -81,10 +80,13 @@ class Keyboard:
 	while cnt < len(buf):
 	    pyautogui.press('backspace')
 	    cnt += 1
-	pyautogui.typewrite(txt)
+	pyautogui.typewrite(txt + " ")
 	for w in window_list:
 	    if re.search("Seagator Keyboard",w.get_name()):
 		w.activate(int(time.time()))	
+	
+	word.suggestions = []
+	buf = []
     
     def keypress(self,sequence):
 	global buf
@@ -112,7 +114,10 @@ class Keyboard:
  
         if re.search("<-",sequence):
             sequence = "key BackSpace'"
-	    buf.pop()
+	    try:
+	    	buf.pop()
+	    except IndexError:
+		pass
         elif re.search("Enter",sequence):
             sequence = "key Return'"
         elif re.search(u'\u2191',sequence):
@@ -123,7 +128,10 @@ class Keyboard:
 	    buf = []
 	    word.suggestions = []
 	else:
-	    buf.append(sequence[4])
+	    if not re.search("keydown Shift",sequence):
+	    	buf.append(sequence[4])
+	    else:
+		buf.append(sequence[20])
 
 
         p = Popen(['xte'], stdin=PIPE)
@@ -132,11 +140,14 @@ class Keyboard:
             if re.search("Sea",w.get_name()):
                 w.activate(int(time.time())) # reactivate the keyboard
 
-	if len(buf) > 2:
+	if len(buf) > 1:
 	    root.search("".join(buf))
-	    sug1['text'] = word.suggestions[0]
-	    sug2['text'] = word.suggestions[1]
-	    sug3['text'] = word.suggestions[2]
+	    try:
+	    	sug1['text'] = word.suggestions[0]
+	    	sug2['text'] = word.suggestions[1]
+	    	sug3['text'] = word.suggestions[2]
+	    except IndexError:
+		pass
 	    word.suggestions = []
         screen.force_update()
 
