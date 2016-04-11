@@ -90,7 +90,6 @@ class Keyboard:
     
     def keypress(self,sequence):
 	global buf
-	global sug1
         #get the active window
         global shift_pressed
         screen = wnck.screen_get_default()
@@ -120,6 +119,8 @@ class Keyboard:
 		pass
         elif re.search("Enter",sequence):
             sequence = "key Return'"
+	    buf = []
+	    word.suggestions = []
         elif re.search(u'\u2191',sequence):
             #global shift_pressed
             shift_pressed = not shift_pressed
