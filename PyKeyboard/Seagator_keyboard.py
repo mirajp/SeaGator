@@ -70,11 +70,18 @@ class Keyboard:
         window_list = screen.get_windows()
         #active_window = screen.get_active_window().get_name()
         #active the second to last window unless it is the Seagator keyboard, then activate last opened
-        if not re.search("Seagator Keyboard",window_list[-2].get_name()):
+        """
+	if not re.search("Seagator Keyboard",window_list[-2].get_name()):
             window_list[-2].activate(int(time.time()))
         else:
             window_list[-1].activate(int(time.time()))
-        time.sleep(0.1)
+        """
+
+        for w in window_list:
+            if re.search("scratchpaper.txt",w.get_name()):
+                w.activate(int(time.time()))
+
+	time.sleep(0.1)
 
 	cnt = 0
 	while cnt < len(buf):
@@ -85,6 +92,9 @@ class Keyboard:
 	    if re.search("Seagator Keyboard",w.get_name()):
 		w.activate(int(time.time()))	
 	
+ 	sug1['text'] = ""
+        sug2['text'] = ""
+        sug3['text'] = ""
 	word.suggestions = []
 	buf = []
     
@@ -100,10 +110,16 @@ class Keyboard:
         window_list = screen.get_windows()
         #active_window = screen.get_active_window().get_name()
         #active the second to last window unless it is the Seagator keyboard, then activate last opened
-        if not re.search("Seagator Keyboard",window_list[-2].get_name()):
+        """
+	if not re.search("Seagator Keyboard",window_list[-2].get_name()):
             window_list[-2].activate(int(time.time()))
         else:
             window_list[-1].activate(int(time.time()))
+	time.sleep(0.1)
+	"""
+	for w in window_list:
+	    if re.search("scratchpaper.txt",w.get_name()):
+		w.activate(int(time.time()))
 	time.sleep(0.1)
        # for w in window_list
        #     print w.get_name()
@@ -128,6 +144,9 @@ class Keyboard:
 	elif re.search("Space",sequence):
 	    buf = []
 	    word.suggestions = []
+	    sug1['text'] = ""
+            sug2['text'] = ""
+            sug3['text'] = ""
 	else:
 	    if not re.search("keydown Shift",sequence):
 	    	buf.append(sequence[4])

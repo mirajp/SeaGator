@@ -1,38 +1,24 @@
 import numpy as np
 import cv2
 import os.path
-#import cv2gpu
 import time
+import pyautogui
 
-maxMisses = 3
-stretchAmount = 10
-padding = 100
+pyautogui.FAILSAFE = False
+
 #Localized face detection, store upper left x,y with w,h
 local_face = {'x':0, 'y':0, 'w':0, 'h':0}
 numEyesFound = 0
 local_eyes = [{'x':0, 'y':0, 'w':0, 'h':0},{'x':0, 'y':0, 'w':0, 'h':0}]
-numMisses = 0
+
+eyeXYFrames = []
+leftEyeFrames = []
 
 cascade_file_gpu = 'haarcascade_frontalface_default_cuda.xml'
 #cv2gpu.init_gpu_detector(cascade_file_gpu)
 
 imageCount = 0
 eyePairCount = 0
-
-def updateLocalFace(x,y,w,h):
-    global padding
-    localx = local_face['x']+x-padding
-    localy = local_face['y']+y-padding
-    if localx < 0:
-        localx = 0
-    if localy < 0:
-        localy = 0
-
-    local_face['x'] = localx
-    local_face['y'] = localy
-    local_face['w'] = w+padding*2
-    local_face['h'] = h+padding*2
-    return
 
 def expandFaceWindow(stretch):
     localx = local_face['x']-stretch
@@ -119,20 +105,10 @@ while 1:
     #print "Cam1", faces
     #print "Cam2", faces2
     
-    """
-    if len(faces) == 0:
-        #Miss, lost face
-        numMisses += 1
-        expandFaceWindow(stretchAmount)
-        if numMisses > maxMisses:
-            print "Resetting window"
-            local_face['w'] = 0
-    """
     circles = None
     #for (x,y,w,h),(x2,y2,w2,h2) in zip(faces,faces2):
     for (x,y,w,h) in faces:
-        numMisses = 0
-        #updateLocalFace(x,y,w,h)
+        #print "face: Center:", (x+(w/2), y+(h/2))
         #print local_face
         
         #Blue rectangle for face
@@ -214,9 +190,16 @@ while 1:
             #print "E0: Width:", ew0, "Height:", eh0
             #print "E1: Width:", ew1, "Height:", eh1
             circles0 = cv2.HoughCircles(gceye0,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
+            eye0x = 0
+            eye0y = 0
+            eye1x = 0
+            eye1y = 0
             if circles0 is not None:
                 for i in circles0[0,:]:
-                    print "eye0: Center:", (x+ex0+i[0], y+ey0+i[1]), "Radius:", i[2]
+                    #print "eye0: Center:", (x+ex0+i[0], y+ey0+i[1]), "Radius:", i[2]
+                    eye0x = x+ex0+i[0]
+                    eye0y = y+ey0+i[1]
+
                     cv2.circle(ceye0,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
                     cv2.circle(eye0,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
                     cv2.circle(ceye0,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
@@ -229,20 +212,27 @@ while 1:
             #circles1 = cv2.HoughCircles(eye1,cv2.HOUGH_GRADIENT,1,10,param1=50,param2=30,minRadius=5,maxRadius=20)
             circles1 = cv2.HoughCircles(gceye1,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
             if circles1 is not None:
-                if circles0 is not None:
-                    eyePairCount += 1
-
                 for i in circles1[0,:]:
-                    print "eye1: Center:", (x+ex1+i[0], y+ey1+i[1]), "Radius:", i[2]
+                    #print "eye1: Center:", (x+ex1+i[0], y+ey1+i[1]), "Radius:", i[2]
+                    eye1x = x+ex1+i[0]
+                    eye1y = y+ey1+i[1]
+                    
                     cv2.circle(ceye1,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
                     cv2.circle(eye1,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
                     cv2.circle(ceye1,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
                     cv2.circle(eye1,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
+                
+                if circles0 is not None:
+                    eyePairCount += 1
+                    eyeXYFrames.append([eye0x, eye0y])
+                    eyeXYFrames.append([eye1x, eye1y])
+
+                
                 cv2.imwrite('eye1_hough.jpg',ceye1)
                 #print "showing eye1"
                 cv2.imshow('eye1',eye1)
             
-            print ""
+            #print ""
 
             #pupil_params.minArea = eyeBoxArea0/5
             #pupil_params.maxArea = eyeBoxArea0/3
@@ -318,7 +308,36 @@ while 1:
     imageCount += 1
 
     if eyePairCount > 10:
-        break
+        for itr in range(0, len(eyeXYFrames)-1):
+            eyeA = eyeXYFrames[itr]
+            eyeB = eyeXYFrames[itr+1]
+
+
+            #EyeA is the left eye
+            if eyeA[0] < eyeB[0]:
+                leftEyeFrames.append(eyeA[0])
+            else:
+                leftEyeFrames.append(eyeB[0])
+
+            itr += 1
+
+        avgX = sum(leftEyeFrames)/len(leftEyeFrames)
+        xhat = -35.25*avgX + 8931.11
+        if (xhat <= 0):
+            xhat = 1
+        if (xhat >= 1280):
+            xhat = 1279
+
+        print "Predicted screen-x =", xhat
+        pyautogui.moveTo(xhat, 600)
+
+        leftEyeFrames = []
+        eyeXYFrames = []
+        #del leftEyeFrames[:]
+        #del eyeXYFrames[:]
+        eyePairCount = 0
+
+    #    break
 
 cap.release()
 #cap2.release()
