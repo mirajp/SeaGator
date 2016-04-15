@@ -197,6 +197,17 @@ cv2.destroyAllWindows()
 
 while 1:
     capturedXYpairs = getXYofPupils()
+
+    """
+    xhat = -35.25*avgX + 8931.11
+    if (xhat <= 0):
+        xhat = 1
+    if (xhat >= 1280):
+        xhat = 1279
+
+    print "Predicted screen-x =", xhat
+    pyautogui.moveTo(xhat, 600)
+    """
     k = cv2.waitKey(10)
     if k == ord('q'):
         break
