@@ -4,7 +4,10 @@ import numpy as np
 #img = cv2.imread("eye0.jpg", 0)
 #img = cv2.imread("screencap7eye0.jpg", 0)
 #img = cv2.imread("screencap7eye1.jpg", 0)
-origimg = cv2.imread("eyecolor.jpg")
+#origimg = cv2.imread("eyecolor.jpg")
+#origimg = cv2.imread("eye1_hough.jpg")
+origimg = cv2.imread("eye0_hough.jpg")
+
 cv2.imshow("original", origimg)
 cv2.waitKey(0)
 img = origimg.copy()
@@ -12,6 +15,11 @@ img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 cv2.imshow("img_gray", img)
 cv2.imwrite("img_gray.jpg", img)
 cv2.waitKey(0)
+#img = cv2.adaptiveThreshold(img,255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,11,2)
+#cv2.imshow("img_grayinvblurequiadpthresg", img)
+#cv2.imwrite("img_grayinvblurequiadpthresg.jpg", img)
+#cv2.waitKey(0)
+
 cv2.bitwise_not(img, img)
 cv2.imshow("img_grayinv", img)
 cv2.imwrite("img_grayinv.jpg", img)
@@ -24,6 +32,13 @@ img = cv2.equalizeHist(img)
 cv2.imshow("img_grayinvblurequi", img)
 cv2.imwrite("img_grayinvblurequi.jpg", img)
 cv2.waitKey(0)
+#img = cv2.adaptiveThreshold(img,205, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,13,2)
+#img = cv2.adaptiveThreshold(img,205, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,37,7)
+#cv2.imshow("img_grayinvblurequiadpthresg", img)
+#cv2.imwrite("img_grayinvblurequiadpthresg.jpg", img)
+#cv2.waitKey(0)
+
+#Center w/o thresholding: 39.5, 32.5 radius = 12.34908867
 
 #param1 - refers to the edge threshold that will be used by the Canny edge detector
 #(applied to a grayscale image). cvCanny() accepts two thresholds and is internally
@@ -51,7 +66,8 @@ cv2.waitKey(0)
 #Works on screencap7eye0
 #circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,10,param1=50,param2=20,minRadius=0,maxRadius=20)
 #For screencap7eye1, change minDist to 50 to reduce number of false detections, radius 25 seems to work better
-circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
+#circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
+circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,2,50,param1=200,param2=20,minRadius=7,maxRadius=10)
 if circles is not None:
         
     print circles
