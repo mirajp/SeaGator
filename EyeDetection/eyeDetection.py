@@ -5,6 +5,7 @@ import os.path
 import time
 import sys
 import pyautogui
+import mapping
 
 pyautogui.FAILSAFE = False
 
@@ -117,7 +118,7 @@ def getXYofPupils():
                         pupilXYs.append([eye0x-facecenterX, eye0y-facecenterY])
                         pupilXYs.append([eye1x-facecenterX, eye1y-facecenterY])
                         break
-            
+        cv2.imshow("anything",img)  
         if foundbotheyes:
             break
 
@@ -143,9 +144,15 @@ while 1:
 
 
 #calibCircles are the points to draw
-calibCircles = [[10,10], [10,470], [10, 930], [640,10], [640,470], [640, 930], [1270,10], [1270,470], [1270, 930]]
+#calibCircles = [[10,10], [10,470], [10, 930], [640,10], [640,470], [640, 930], [1270,10], [1270,470], [1270, 930]]
 #calibPoints are the true x,y values for the mapping
-calibPoints = [[10,65], [10,527], [10,990], [10,65], [10,527], [10,990], [1270,65], [1270,527], [1270,990]]
+#calibPoints = [[10,65], [10,527], [10,990], [640,65], [640,527], [640,990], [1270,65], [1270,527], [1270,990]]
+
+#calibCircles are the points to draw
+calibCircles = [[10,10], [10,470], [640,10], [640,470], [1270,10], [1270,470]]
+#calibPoints are the true x,y values for the mapping
+calibPoints = [[10,65], [10,527], [640,65], [640,527], [1270,65], [1270,527]]
+
 
 #These hold the pupil x to actual x, and pupil y to actual y
 leftEyeXs = []
@@ -153,9 +160,7 @@ leftEyeYs = []
 rightEyeXs = []
 rightEyeYs = []
 
-
-
-for i in range(0, len(calibCircles)-1):
+for i in range(0, len(calibCircles)):
     cv2.destroyAllWindows()
     calibImg = calibImgBkup.copy()
     cv2.circle(calibImg,(calibCircles[i][0],calibCircles[i][1]),5,(0,0,255),10)
@@ -184,7 +189,7 @@ for i in range(0, len(calibCircles)-1):
             record = 1
         elif k == ord('z'):
             if counter >= 10:
-                print "Have enough frames"
+                print "Have enough frames for calibration " + str(i+1)
                 cv2.destroyAllWindows()
                 break
         elif k == ord('q'):
@@ -193,27 +198,57 @@ for i in range(0, len(calibCircles)-1):
 
 
 cv2.destroyAllWindows()
+# Once all the calibration points have experimental XYs for each eye, use the correlation to make a mapping function
+polyorder = 1
+leftEyeXpoly = mapping.mapping(leftEyeXs, polyorder)
+leftEyeYpoly = mapping.mapping(leftEyeYs, polyorder)
+rightEyeXpoly = mapping.mapping(rightEyeXs, polyorder)
+rightEyeYpoly = mapping.mapping(rightEyeYs, polyorder)
+
+leftEyeXpoly = np.poly1d(leftEyeXpoly)
+leftEyeYpoly = np.poly1d(leftEyeYpoly)
+rightEyeXpoly = np.poly1d(rightEyeXpoly)
+rightEyeYpoly = np.poly1d(rightEyeYpoly)
 
 
+counter = 0
+
+capturedLeftXYs = []
+capturedRightXYs = []
 while 1:
+    counter += 1
     capturedXYpairs = getXYofPupils()
+    capturedLeftXYs.append(capturedXYpairs[0])
+    capturedRightXYs.append(capturedXYpairs[1])
 
-    """
-    xhat = -35.25*avgX + 8931.11
-    if (xhat <= 0):
-        xhat = 1
-    if (xhat >= 1280):
-        xhat = 1279
+    if counter == 10:
+        leftEyeAvg = [sum(x) for x in zip(*capturedLeftXYs)]
+        rightEyeAvg = [sum(x) for x in zip(*capturedRightXYs)]
 
-    print "Predicted screen-x =", xhat
-    pyautogui.moveTo(xhat, 600)
-    """
+        leftEyeXAvg = leftEyeAvg[0]/len(capturedLeftXYs)
+        leftEyeYAvg = leftEyeAvg[1]/len(capturedLeftXYs)
+
+        rightEyeXAvg = rightEyeAvg[0]/len(capturedRightXYs)
+        rightEyeYAvg = rightEyeAvg[1]/len(capturedRightXYs)
+
+        leftEyeXHat = leftEyeXpoly(leftEyeXAvg)
+        leftEyeYHat = leftEyeYpoly(leftEyeYAvg)
+        rightEyeXHat = rightEyeXpoly(rightEyeXAvg)
+        rightEyeYHat = rightEyeYpoly(rightEyeYAvg)
+
+        print "Based on left eye, coord =", (leftEyeXHat, leftEyeYHat)
+        print "Based on right eye, coord =", (rightEyeXHat, rightEyeYHat)
+
+        pyautogui.moveTo(int(leftEyeXHat), int(leftEyeYHat))
+
+        counter = 0        
+        capturedLeftXYs = []
+        capturedRightXYs = []
+
     k = cv2.waitKey(10)
     if k == ord('q'):
         break
 
-print leftEyeXs
-print rightEyeXs
 
 cap.release()
 cv2.destroyAllWindows()
