@@ -88,9 +88,9 @@ def getXYofPupils():
                 #gceye1 = cv2.adaptiveThreshold(gceye1,255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,11,2)
 
                 #cv2.imshow('threshold_eye0',gceye0)
-                #circles0 = cv2.HoughCircles(gceye0,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
+                circles0 = cv2.HoughCircles(gceye0,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
                 #circles0 = cv2.HoughCircles(gceye0,cv2.HOUGH_GRADIENT,2,50,param1=50,param2=20,minRadius=7,maxRadius=13)
-                circles0 = cv2.HoughCircles(gceye0,cv2.HOUGH_GRADIENT,2,50,param1=150,param2=20,minRadius=7,maxRadius=10)
+                #circles0 = cv2.HoughCircles(gceye0,cv2.HOUGH_GRADIENT,2,50,param1=150,param2=20,minRadius=7,maxRadius=10)
                 eye0x = 0
                 eye0y = 0
                 eye1x = 0
@@ -102,9 +102,9 @@ def getXYofPupils():
                         cv2.circle(ceye0,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
                         cv2.circle(ceye0,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
                         
-                #circles1 = cv2.HoughCircles(gceye1,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
+                circles1 = cv2.HoughCircles(gceye1,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
                 #circles1 = cv2.HoughCircles(gceye1,cv2.HOUGH_GRADIENT,2,50,param1=50,param2=20,minRadius=7,maxRadius=13)
-                circles1 = cv2.HoughCircles(gceye1,cv2.HOUGH_GRADIENT,2,50,param1=150,param2=20,minRadius=7,maxRadius=10)
+                #circles1 = cv2.HoughCircles(gceye1,cv2.HOUGH_GRADIENT,2,50,param1=150,param2=20,minRadius=7,maxRadius=10)
                 if circles1 is not None:
                     for i in circles1[0,:]:
                         #print "eye1: Center:", (x+ex1+i[0], y+ey1+i[1]), "Radius:", i[2]
@@ -118,11 +118,17 @@ def getXYofPupils():
                         pupilXYs.append([eye0x-facecenterX, eye0y-facecenterY])
                         pupilXYs.append([eye1x-facecenterX, eye1y-facecenterY])
                         break
-        cv2.imshow("anything",img)  
+        cv2.imshow("anything",img)
+        k = cv2.waitKey(10)
+        if k == ord('q'):
+            cap.release()
+            sys.exit(0)
+        elif k == ord('z'):
+            return pupilXYs
+            
         if foundbotheyes:
             break
 
-    
     return pupilXYs
 
 
@@ -170,6 +176,13 @@ for i in range(0, len(calibCircles)):
     while 1:
         if record:
             capturedXYpairs = getXYofPupils()
+            if (len(capturedXYpairs) == 0 and counter >= 5):
+                print "Have enough frames for calibration " + str(i+1)
+                cv2.destroyAllWindows()
+                break
+            while(len(capturedXYpairs) == 0):
+                capturedXYpairs = getXYofPupils()
+
             leftEyeXYs = capturedXYpairs[0]
             rightEyeXYs = capturedXYpairs[0]
             
@@ -188,7 +201,7 @@ for i in range(0, len(calibCircles)):
             #Start recording frames
             record = 1
         elif k == ord('z'):
-            if counter >= 10:
+            if counter >= 5:
                 print "Have enough frames for calibration " + str(i+1)
                 cv2.destroyAllWindows()
                 break
