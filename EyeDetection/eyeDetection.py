@@ -6,6 +6,13 @@ import time
 import sys
 import pyautogui
 import mapping
+import matplotlib.pyplot as plt
+from sklearn.tree import DecisionTreeRegressor
+
+img_cnt = 0
+
+leftRegressorX = DecisionTreeRegressor(max_depth=2)
+leftRegressorY = DecisionTreeRegressor(max_depth=2)
 
 pyautogui.FAILSAFE = False
 
@@ -26,7 +33,7 @@ glint_params = cv2.SimpleBlobDetector_Params()
 cap = cv2.VideoCapture(0)
 
 def getXYofPupils():
-    global cap
+    global cap, img_cnt
     pupilXYs = []
     #Array will be like: [[leftpupilX,leftpupilY], [rightpupilX,rightpupilY]]
     foundbotheyes = 0
@@ -71,6 +78,8 @@ def getXYofPupils():
                 
                 ceye0 = roi_color[ey0:ey0+eh0,ex0:ex0+ew0]
                 ceye1 = roi_color[ey1:ey1+eh1,ex1:ex1+ew1]
+                ceye0_backup = ceye0.copy()
+                ceye1_backup = ceye1.copy()
                 
                 gceye0 = cv2.cvtColor(ceye0, cv2.COLOR_BGR2GRAY)
                 gceye0 = cv2.fastNlMeansDenoising(gceye0,None,10,7)
@@ -88,9 +97,9 @@ def getXYofPupils():
                 #gceye1 = cv2.adaptiveThreshold(gceye1,255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,11,2)
 
                 #cv2.imshow('threshold_eye0',gceye0)
-                circles0 = cv2.HoughCircles(gceye0,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
+                #circles0 = cv2.HoughCircles(gceye0,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
                 #circles0 = cv2.HoughCircles(gceye0,cv2.HOUGH_GRADIENT,2,50,param1=50,param2=20,minRadius=7,maxRadius=13)
-                #circles0 = cv2.HoughCircles(gceye0,cv2.HOUGH_GRADIENT,2,50,param1=150,param2=20,minRadius=7,maxRadius=10)
+                circles0 = cv2.HoughCircles(gceye0,cv2.HOUGH_GRADIENT,2,50,param1=150,param2=20,minRadius=7,maxRadius=10)
                 eye0x = 0
                 eye0y = 0
                 eye1x = 0
@@ -101,23 +110,52 @@ def getXYofPupils():
                         eye0y = y+ey0+i[1]
                         cv2.circle(ceye0,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
                         cv2.circle(ceye0,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
+
+                gceye0 = cv2.cvtColor(ceye0, cv2.COLOR_BGR2GRAY)
+                circles0 = cv2.HoughCircles(gceye0,cv2.HOUGH_GRADIENT,2,50,param1=200,param2=20,minRadius=7,maxRadius=10)
+                if circles0 is not None:
+                    for i in circles0[0,:]:
+                        eye0x = x+ex0+i[0]
+                        eye0y = y+ey0+i[1]
+                        cv2.circle(ceye0_backup,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
+                        cv2.circle(ceye0_backup,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
                         
-                circles1 = cv2.HoughCircles(gceye1,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
+                #circles1 = cv2.HoughCircles(gceye1,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
                 #circles1 = cv2.HoughCircles(gceye1,cv2.HOUGH_GRADIENT,2,50,param1=50,param2=20,minRadius=7,maxRadius=13)
-                #circles1 = cv2.HoughCircles(gceye1,cv2.HOUGH_GRADIENT,2,50,param1=150,param2=20,minRadius=7,maxRadius=10)
+                circles1 = cv2.HoughCircles(gceye1,cv2.HOUGH_GRADIENT,2,50,param1=150,param2=20,minRadius=7,maxRadius=10)
                 if circles1 is not None:
                     for i in circles1[0,:]:
                         #print "eye1: Center:", (x+ex1+i[0], y+ey1+i[1]), "Radius:", i[2]
                         eye1x = x+ex1+i[0]
                         eye1y = y+ey1+i[1]
                         cv2.circle(ceye1,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
-                        cv2.circle(ceye1,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle    
-                    
-                    if circles0 is not None:
-                        foundbotheyes = 1
-                        pupilXYs.append([eye0x-facecenterX, eye0y-facecenterY])
-                        pupilXYs.append([eye1x-facecenterX, eye1y-facecenterY])
-                        break
+                        cv2.circle(ceye1,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
+
+                    gceye1 = cv2.cvtColor(ceye1, cv2.COLOR_BGR2GRAY)
+                    circles1 = cv2.HoughCircles(gceye1,cv2.HOUGH_GRADIENT,2,50,param1=150,param2=20,minRadius=7,maxRadius=10)
+                    if circles1 is not None:
+                        for i in circles1[0,:]:
+                            #print "eye1: Center:", (x+ex1+i[0], y+ey1+i[1]), "Radius:", i[2]
+                            eye1x = x+ex1+i[0]
+                            eye1y = y+ey1+i[1]
+                            cv2.circle(ceye1_backup,(i[0],i[1]),i[2],(0,255,0),1) # draw the outer circle
+                            cv2.circle(ceye1_backup,(i[0],i[1]),2,(0,0,255),1) # draw the center of the circle
+                        
+                        if circles0 is not None:
+                            foundbotheyes = 1
+                            pupilXYs.append([eye0x-facecenterX, eye0y-facecenterY])
+                            pupilXYs.append([eye1x-facecenterX, eye1y-facecenterY])
+
+                            
+                            leftsave = "./savedpics/lefteye"
+                            rightsave = "./savedpics/righteye"
+
+                            while os.path.isfile(leftsave + str(img_cnt) + ".png"):
+                                img_cnt += 1
+                            cv2.imwrite(leftsave + str(img_cnt) + ".png", ceye0_backup)
+                            cv2.imwrite(rightsave + str(img_cnt) + ".png", ceye1_backup)
+
+                            break
         cv2.imshow("anything",img)
         k = cv2.waitKey(10)
         if k == ord('q'):
@@ -211,14 +249,22 @@ for i in range(0, len(calibCircles)):
 
 
 cv2.destroyAllWindows()
+leftRegressorX.fit([[x[0]] for x in leftEyeXs],[x[1] for x in leftEyeXs])
+leftRegressorY.fit([[y[0]] for y in leftEyeYs],[y[1] for y in leftEyeYs])
 # Once all the calibration points have experimental XYs for each eye, use the correlation to make a mapping function
-polyorder = 1
+polyorder = 3
 leftEyeXpoly = mapping.mapping(leftEyeXs, polyorder)
 leftEyeYpoly = mapping.mapping(leftEyeYs, polyorder)
 rightEyeXpoly = mapping.mapping(rightEyeXs, polyorder)
 rightEyeYpoly = mapping.mapping(rightEyeYs, polyorder)
 
+#plot
+
 leftEyeXpoly = np.poly1d(leftEyeXpoly)
+
+#plt.plot([x[0] for x in leftEyeXs],[x[1] for x in leftEyeXs], '.',[x[0] for x in leftEyeXs],leftEyeXpoly)
+#plt.show()
+
 leftEyeYpoly = np.poly1d(leftEyeYpoly)
 rightEyeXpoly = np.poly1d(rightEyeXpoly)
 rightEyeYpoly = np.poly1d(rightEyeYpoly)
@@ -234,7 +280,7 @@ while 1:
     capturedLeftXYs.append(capturedXYpairs[0])
     capturedRightXYs.append(capturedXYpairs[1])
 
-    if counter == 10:
+    if counter == 5:
         leftEyeAvg = [sum(x) for x in zip(*capturedLeftXYs)]
         rightEyeAvg = [sum(x) for x in zip(*capturedRightXYs)]
 
@@ -248,6 +294,12 @@ while 1:
         leftEyeYHat = leftEyeYpoly(leftEyeYAvg)
         rightEyeXHat = rightEyeXpoly(rightEyeXAvg)
         rightEyeYHat = rightEyeYpoly(rightEyeYAvg)
+
+       # print "Based on left eye, coord =", (leftEyeXHat, leftEyeYHat)
+      #  print "Based on right eye, coord =", (rightEyeXHat, rightEyeYHat)
+
+        leftEyeXHat = leftRegressorX.predict(leftEyeXAvg)
+        leftEyeYHat = leftRegressorY.predict(leftEyeYAvg)
 
         print "Based on left eye, coord =", (leftEyeXHat, leftEyeYHat)
         print "Based on right eye, coord =", (rightEyeXHat, rightEyeYHat)
