@@ -8,11 +8,18 @@ import pyautogui
 import mapping
 import matplotlib.pyplot as plt
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import ExtraTreesRegressor
+
+
 
 img_cnt = 0
 
-leftRegressorX = DecisionTreeRegressor(max_depth=2)
-leftRegressorY = DecisionTreeRegressor(max_depth=2)
+#leftRegressorX = DecisionTreeRegressor(max_depth=5)
+#leftRegressorY = DecisionTreeRegressor(max_depth=5)
+
+leftRegressorX = ExtraTreesRegressor(n_estimators=10)
+leftRegressorY = ExtraTreesRegressor(n_estimators=10)
+
 
 pyautogui.FAILSAFE = False
 
@@ -146,7 +153,7 @@ def getXYofPupils():
                             pupilXYs.append([eye0x-facecenterX, eye0y-facecenterY])
                             pupilXYs.append([eye1x-facecenterX, eye1y-facecenterY])
 
-                            
+                            """
                             leftsave = "./savedpics/lefteye"
                             rightsave = "./savedpics/righteye"
 
@@ -154,7 +161,7 @@ def getXYofPupils():
                                 img_cnt += 1
                             cv2.imwrite(leftsave + str(img_cnt) + ".png", ceye0_backup)
                             cv2.imwrite(rightsave + str(img_cnt) + ".png", ceye1_backup)
-
+                            """
                             break
         cv2.imshow("anything",img)
         k = cv2.waitKey(10)
@@ -249,8 +256,13 @@ for i in range(0, len(calibCircles)):
 
 
 cv2.destroyAllWindows()
-leftRegressorX.fit([[x[0]] for x in leftEyeXs],[x[1] for x in leftEyeXs])
-leftRegressorY.fit([[y[0]] for y in leftEyeYs],[y[1] for y in leftEyeYs])
+print "training"
+#leftRegressorX.fit([[x[0]] for x in leftEyeXs],[x[1] for x in leftEyeXs])
+#leftRegressorY.fit([[y[0]] for y in leftEyeYs],[y[1] for y in leftEyeYs])
+leftRegressorX.fit([[x[0]] for x in rightEyeXs],[x[1] for x in rightEyeXs])
+leftRegressorY.fit([[y[0]] for y in rightEyeYs],[y[1] for y in rightEyeYs])
+
+print "Done Training"
 # Once all the calibration points have experimental XYs for each eye, use the correlation to make a mapping function
 polyorder = 3
 leftEyeXpoly = mapping.mapping(leftEyeXs, polyorder)
@@ -274,13 +286,19 @@ counter = 0
 
 capturedLeftXYs = []
 capturedRightXYs = []
+running_sumX = 0.0
+running_sumY = 0.0
+
 while 1:
     counter += 1
     capturedXYpairs = getXYofPupils()
     capturedLeftXYs.append(capturedXYpairs[0])
     capturedRightXYs.append(capturedXYpairs[1])
-
+    running_sumX += float(capturedXYpairs[0][0]/counter)
+    running_sumY += float(capturedXYpairs[0][1]/counter)
     if counter == 5:
+        print "Running sum x = ", running_sumX
+        print "Running sum y = ", running_sumY
         leftEyeAvg = [sum(x) for x in zip(*capturedLeftXYs)]
         rightEyeAvg = [sum(x) for x in zip(*capturedRightXYs)]
 
@@ -298,14 +316,18 @@ while 1:
        # print "Based on left eye, coord =", (leftEyeXHat, leftEyeYHat)
       #  print "Based on right eye, coord =", (rightEyeXHat, rightEyeYHat)
 
-        leftEyeXHat = leftRegressorX.predict(leftEyeXAvg)
         leftEyeYHat = leftRegressorY.predict(leftEyeYAvg)
+        leftEyeXHat = leftRegressorX.predict(leftEyeXAvg)
+
+        #leftEyeYHat = leftRegressorY.predict(running_sumY)
+        #leftEyeXHat = leftRegressorX.predict(running_sumX)
 
         print "Based on left eye, coord =", (leftEyeXHat, leftEyeYHat)
         print "Based on right eye, coord =", (rightEyeXHat, rightEyeYHat)
 
         pyautogui.moveTo(int(leftEyeXHat), int(leftEyeYHat))
-
+        running_sumX = 0.0
+        running_sumY = 0.0
         counter = 0        
         capturedLeftXYs = []
         capturedRightXYs = []

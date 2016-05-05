@@ -1,0 +1,44 @@
+face: Center: (297, 318)
+eye0: Center: (341.5, 292.5) Radius: 16.568
+eye1: Center: (250.5, 284.5) Radius: 19.9625
+
+face: Center: (299, 319)
+eye0: Center: (253.5, 280.5) Radius: 15.5724
+eye1: Center: (341.5, 291.5) Radius: 16.568
+
+face: Center: (297, 317)
+eye0: Center: (341.5, 293.5) Radius: 17.7341
+eye1: Center: (250.5, 285.5) Radius: 14.5086
+
+face: Center: (299, 318)
+eye0: Center: (340.5, 292.5) Radius: 19.0394
+eye1: Center: (248.5, 283.5) Radius: 17.7341
+
+face: Center: (299, 318)
+eye0: Center: (259.5, 288.5) Radius: 7.64853
+eye1: Center: (340.5, 293.5) Radius: 17.7341
+
+face: Center: (299, 317)
+eye0: Center: (250.5, 281.5) Radius: 18.7216
+eye1: Center: (350.5, 296.5) Radius: 13.2853
+
+face: Center: (299, 317)
+eye0: Center: (256.5, 286.5) Radius: 11.068
+eye1: Center: (342.5, 292.5) Radius: 17.7341
+
+face: Center: (300, 319)
+eye0: Center: (246.5, 288.5) Radius: 18.7216
+eye1: Center: (342.5, 294.5) Radius: 13.435
+
+face: Center: (298, 317)
+eye0: Center: (253.5, 283.5) Radius: 15.1162
+eye1: Center: (342.5, 293.5) Radius: 15.5724
+
+face: Center: (300, 318)
+eye0: Center: (249.5, 290.5) Radius: 13.5093
+eye1: Center: (343.5, 292.5) Radius: 15.8902
+
+face: Center: (299, 319)
+eye0: Center: (251.5, 284.5) Radius: 16.568
+eye1: Center: (340.5, 293.5) Radius: 15.5724
+

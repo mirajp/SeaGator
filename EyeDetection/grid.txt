@@ -1,0 +1,542 @@
+From 25 inches away from center of screen:
+( x, y ):
+( 0 , 0 ):
+eye0: Center: (401.5, 304.5) Radius: 13.5093
+eye1: Center: (323.5, 294.5) Radius: 11.068
+
+eye0: Center: (402.5, 305.5) Radius: 15.5724
+eye1: Center: (314.5, 298.5) Radius: 8.86002
+
+eye0: Center: (400.5, 304.5) Radius: 14.7139
+eye1: Center: (322.5, 293.5) Radius: 7.77817
+
+eye0: Center: (400.5, 305.5) Radius: 13.435
+eye1: Center: (317.5, 296.5) Radius: 9.82344
+
+eye0: Center: (313.5, 298.5) Radius: 15.5724
+eye1: Center: (398.5, 308.5) Radius: 10.7935
+
+eye0: Center: (401.5, 310.5) Radius: 10.7935
+eye1: Center: (313.5, 299.5) Radius: 15.5724
+
+eye0: Center: (401.5, 306.5) Radius: 12.51
+eye1: Center: (309.5, 298.5) Radius: 16.8077
+
+eye0: Center: (401.5, 305.5) Radius: 13.435
+eye1: Center: (318.5, 291.5) Radius: 13.2853
+
+eye0: Center: (399.5, 303.5) Radius: 11.068
+eye1: Center: (321.5, 295.5) Radius: 13.5093
+
+eye0: Center: (398.5, 309.5) Radius: 8.86002
+eye1: Center: (315.5, 298.5) Radius: 14.5774
+
+
+
+( 0 , 1 ):
+
+
+
+( 0 , 2 ):
+
+
+
+( 0 , 3 ):
+
+
+
+( 0 , 4 ):
+
+
+
+( 0 , 5 ):
+
+
+
+( 0 , 6 ):
+
+
+
+( 0 , 7 ):
+
+
+
+( 0 , 8 ):
+eye0: Center: (409.5, 353.5) Radius: 15.5724
+eye1: Center: (329.5, 332.5) Radius: 13.5093
+
+eye0: Center: (417.5, 351.5) Radius: 15.5081
+eye1: Center: (324.5, 339.5) Radius: 18.7216
+
+eye0: Center: (320.5, 342.5) Radius: 10.7935
+eye1: Center: (416.5, 350.5) Radius: 13.2853
+
+eye0: Center: (417.5, 352.5) Radius: 15.5724
+eye1: Center: (328.5, 335.5) Radius: 13.5093
+
+eye0: Center: (323.5, 347.5) Radius: 13.2853
+eye1: Center: (413.5, 346.5) Radius: 9.82344
+
+eye0: Center: (414.5, 348.5) Radius: 9.82344
+eye1: Center: (322.5, 341.5) Radius: 11.068
+
+eye0: Center: (410.5, 349.5) Radius: 13.2853
+eye1: Center: (332.5, 336.5) Radius: 11.3358
+
+eye0: Center: (412.5, 350.5) Radius: 13.5093
+eye1: Center: (326.5, 336.5) Radius: 17.6777
+
+eye0: Center: (414.5, 347.5) Radius: 15.5724
+eye1: Center: (327.5, 334.5) Radius: 11.3358
+
+eye0: Center: (334.5, 339.5) Radius: 13.435
+eye1: Center: (422.5, 347.5) Radius: 9.82344
+
+
+
+( 1 , 0 ):
+
+
+
+( 1 , 1 ):
+
+
+
+( 1 , 2 ):
+
+
+
+( 1 , 3 ):
+
+
+
+( 1 , 4 ):
+
+
+
+( 1 , 5 ):
+
+
+
+( 1 , 6 ):
+
+
+
+( 1 , 7 ):
+
+
+
+( 1 , 8 ):
+
+
+
+( 2 , 0 ):
+
+
+
+( 2 , 1 ):
+
+
+
+( 2 , 2 ):
+
+
+
+( 2 , 3 ):
+
+
+
+( 2 , 4 ):
+
+
+
+( 2 , 5 ):
+
+
+
+( 2 , 6 ):
+
+
+
+( 2 , 7 ):
+
+
+
+( 2 , 8 ):
+
+
+
+( 3 , 0 ):
+
+
+
+( 3 , 1 ):
+
+
+
+( 3 , 2 ):
+
+
+
+( 3 , 3 ):
+
+
+
+( 3 , 4 ):
+
+
+
+( 3 , 5 ):
+
+
+
+( 3 , 6 ):
+
+
+
+( 3 , 7 ):
+
+
+
+( 3 , 8 ):
+
+
+
+( 4 , 0 ):
+
+
+
+( 4 , 1 ):
+
+
+
+( 4 , 2 ):
+
+
+
+( 4 , 3 ):
+
+
+
+( 4 , 4 ):
+
+
+
+( 4 , 5 ):
+
+
+
+( 4 , 6 ):
+
+
+
+( 4 , 7 ):
+
+
+
+( 4 , 8 ):
+
+
+
+( 5 , 0 ):
+
+
+
+( 5 , 1 ):
+
+
+
+( 5 , 2 ):
+
+
+
+( 5 , 3 ):
+
+
+
+( 5 , 4 ):
+eye0: Center: (301.5, 313.5) Radius: 10.9772
+eye1: Center: (388.5, 320.5) Radius: 8.63134
+
+eye0: Center: (392.5, 321.5) Radius: 16.5076
+eye1: Center: (306.5, 314.5) Radius: 12.3491
+
+eye0: Center: (307.5, 314.5) Radius: 7.64853
+eye1: Center: (391.5, 322.5) Radius: 11.068
+
+eye0: Center: (390.5, 322.5) Radius: 13.435
+eye1: Center: (301.5, 313.5) Radius: 10.1242
+
+eye0: Center: (388.5, 320.5) Radius: 8.86002
+eye1: Center: (300.5, 313.5) Radius: 10.7935
+
+eye0: Center: (302.5, 316.5) Radius: 9.61769
+eye1: Center: (385.5, 324.5) Radius: 17.6777
+
+eye0: Center: (298.5, 318.5) Radius: 13.5093
+eye1: Center: (390.5, 324.5) Radius: 11.4237
+
+eye0: Center: (389.5, 324.5) Radius: 12.0208
+eye1: Center: (298.5, 318.5) Radius: 13.5093
+
+eye0: Center: (305.5, 316.5) Radius: 7.51665
+eye1: Center: (388.5, 324.5) Radius: 13.435
+
+eye0: Center: (387.5, 327.5) Radius: 9.82344
+eye1: Center: (304.5, 316.5) Radius: 7.51665
+
+
+
+( 5 , 5 ):
+
+
+
+( 5 , 6 ):
+
+
+
+( 5 , 7 ):
+
+
+
+( 5 , 8 ):
+
+
+
+( 6 , 0 ):
+
+
+
+( 6 , 1 ):
+
+
+
+( 6 , 2 ):
+
+
+
+( 6 , 3 ):
+
+
+
+( 6 , 4 ):
+
+
+
+( 6 , 5 ):
+
+
+
+( 6 , 6 ):
+
+
+
+( 6 , 7 ):
+
+
+
+( 6 , 8 ):
+
+
+
+( 7 , 0 ):
+
+
+
+( 7 , 1 ):
+
+
+
+( 7 , 2 ):
+
+
+
+( 7 , 3 ):
+
+
+
+( 7 , 4 ):
+
+
+
+( 7 , 5 ):
+
+
+
+( 7 , 6 ):
+
+
+
+( 7 , 7 ):
+
+
+
+( 7 , 8 ):
+
+
+
+( 8 , 0 ):
+
+
+
+( 8 , 1 ):
+
+
+
+( 8 , 2 ):
+
+
+
+( 8 , 3 ):
+
+
+
+( 8 , 4 ):
+
+
+
+( 8 , 5 ):
+
+
+
+( 8 , 6 ):
+
+
+
+( 8 , 7 ):
+
+
+
+( 8 , 8 ):
+
+
+
+( 9 , 0 ):
+
+
+
+( 9 , 1 ):
+
+
+
+( 9 , 2 ):
+
+
+
+( 9 , 3 ):
+
+
+
+( 9 , 4 ):
+
+
+
+( 9 , 5 ):
+
+
+
+( 9 , 6 ):
+
+
+
+( 9 , 7 ):
+
+
+
+( 9 , 8 ):
+
+
+
+( 10 , 0 ):
+eye0: Center: (301.5, 316.5) Radius: 10.1242
+eye1: Center: (385.5, 325.5) Radius: 7.77817
+
+eye0: Center: (295.5, 320.5) Radius: 10.1242
+eye1: Center: (386.5, 325.5) Radius: 12.3491
+
+eye0: Center: (303.5, 316.5) Radius: 11.3358
+eye1: Center: (395.5, 329.5) Radius: 8.74643
+
+eye0: Center: (300.5, 317.5) Radius: 9.61769
+eye1: Center: (394.5, 330.5) Radius: 10.1242
+
+eye0: Center: (300.5, 322.5) Radius: 13.435
+eye1: Center: (396.5, 328.5) Radius: 18.6682
+
+eye0: Center: (395.5, 330.5) Radius: 9.19239
+eye1: Center: (303.5, 316.5) Radius: 11.068
+
+eye0: Center: (302.5, 318.5) Radius: 18.8282
+eye1: Center: (395.5, 329.5) Radius: 8.63134
+
+eye0: Center: (302.5, 319.5) Radius: 7.64853
+eye1: Center: (395.5, 329.5) Radius: 8.63134
+
+eye0: Center: (300.5, 322.5) Radius: 19.8116
+eye1: Center: (393.5, 331.5) Radius: 10.7935
+
+eye0: Center: (303.5, 317.5) Radius: 17.7341
+eye1: Center: (396.5, 329.5) Radius: 7.64853
+
+
+
+( 10 , 1 ):
+
+
+
+( 10 , 2 ):
+
+
+
+( 10 , 3 ):
+
+
+
+( 10 , 4 ):
+
+
+
+( 10 , 5 ):
+
+
+
+( 10 , 6 ):
+
+
+
+( 10 , 7 ):
+
+
+
+( 10 , 8 ):
+eye0: Center: (376.5, 358.5) Radius: 11.3358
+eye1: Center: (283.5, 350.5) Radius: 18.7216
+
+eye0: Center: (381.5, 355.5) Radius: 10.1242
+eye1: Center: (290.5, 349.5) Radius: 17.6777
+
+eye0: Center: (286.5, 350.5) Radius: 16.568
+eye1: Center: (375.5, 357.5) Radius: 11.3358
+
+eye0: Center: (289.5, 347.5) Radius: 17.6777
+eye1: Center: (376.5, 354.5) Radius: 7.64853
+
+eye0: Center: (292.5, 345.5) Radius: 10.9772
+eye1: Center: (374.5, 357.5) Radius: 10.9772
+
+eye0: Center: (290.5, 345.5) Radius: 8.86002
+eye1: Center: (374.5, 356.5) Radius: 22.9456
+
+eye0: Center: (285.5, 349.5) Radius: 17.6777
+eye1: Center: (375.5, 357.5) Radius: 11.068
+
+eye0: Center: (375.5, 356.5) Radius: 19.8116
+eye1: Center: (292.5, 347.5) Radius: 8.74643
+
+eye0: Center: (288.5, 344.5) Radius: 11.3358
+eye1: Center: (376.5, 357.5) Radius: 11.3358
+
+eye0: Center: (289.5, 342.5) Radius: 10.9772
+eye1: Center: (374.5, 356.5) Radius: 10.9772
+
+

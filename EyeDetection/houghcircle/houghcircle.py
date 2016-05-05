@@ -6,7 +6,8 @@ import numpy as np
 #img = cv2.imread("screencap7eye1.jpg", 0)
 #origimg = cv2.imread("eyecolor.jpg")
 #origimg = cv2.imread("eye1_hough.jpg")
-origimg = cv2.imread("eye0_hough.jpg")
+origimg = cv2.imread("./savedpics/lefteye9.png")
+#origimg = cv2.imread("eye0_hough.jpg")
 
 cv2.imshow("original", origimg)
 cv2.waitKey(0)
@@ -67,7 +68,8 @@ cv2.waitKey(0)
 #circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,10,param1=50,param2=20,minRadius=0,maxRadius=20)
 #For screencap7eye1, change minDist to 50 to reduce number of false detections, radius 25 seems to work better
 #circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=20,minRadius=7,maxRadius=25)
-circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,2,50,param1=200,param2=20,minRadius=7,maxRadius=10)
+circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,2,50,param1=150,param2=20,minRadius=7,maxRadius=10)
+#circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,2,50,param1=200,param2=20,minRadius=7,maxRadius=10)
 if circles is not None:
         
     print circles
